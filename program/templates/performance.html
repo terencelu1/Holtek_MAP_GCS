@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>性能與紀錄 - UAV × UGV Control Center</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/performance.css') }}">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-satellite-dish"></i> UAV × UGV Control Center
+            </span>
+            <div class="navbar-nav flex-row">
+                <div class="nav-item me-3">
+                    <span class="text-light" id="currentTime">20:12:03</span>
+                </div>
+                <div class="nav-item me-3">
+                    <span class="text-light" id="currentDate">2025/11/19</span>
+                </div>
+                <div class="nav-item">
+                    <span class="text-light" id="weatherInfo">
+                        <i class="fas fa-thermometer-half"></i> 24°C | 
+                        <i class="fas fa-wind"></i> 3.5 m/s
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Side Navigation -->
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('index') }}">
+                    <i class="fas fa-tachometer-alt"></i> 總覽
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('map_page') }}">
+                    <i class="fas fa-map"></i> 地圖與任務
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('performance_page') }}">
+                    <i class="fas fa-chart-line"></i> 性能與記錄
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('system_page') }}">
+                    <i class="fas fa-cog"></i> 系統與電源
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid mt-4">
+            <!-- Mode Selection -->
+            <div class="row mb-3">
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                <div class="d-flex align-items-center gap-3">
+                                    <label class="form-label mb-0">載具:</label>
+                                    <select class="form-select form-select-sm" id="vehicleSelect" style="width: auto;">
+                                        <option value="UAV1">UAV1</option>
+                                        <option value="UGV1">UGV1</option>
+                                    </select>
+                                    
+                                    <label class="form-label mb-0">模式:</label>
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="mode" id="modeRealtime" value="realtime" checked>
+                                        <label class="btn btn-outline-primary btn-sm" for="modeRealtime">即時模式</label>
+                                        
+                                        <input type="radio" class="btn-check" name="mode" id="modePlayback" value="playback">
+                                        <label class="btn btn-outline-primary btn-sm" for="modePlayback">回放模式</label>
+                                    </div>
+                                </div>
+                                
+                                <!-- Playback Controls -->
+                                <div id="playbackControls" class="d-flex align-items-center gap-2" style="display: none !important;">
+                                    <button class="btn btn-sm btn-success" id="playBtn">
+                                        <i class="fas fa-play"></i> 播放
+                                    </button>
+                                    <button class="btn btn-sm btn-secondary" id="pauseBtn" style="display: none;">
+                                        <i class="fas fa-pause"></i> 暫停
+                                    </button>
+                                    <button class="btn btn-sm btn-danger" id="stopBtn">
+                                        <i class="fas fa-stop"></i> 停止
+                                    </button>
+                                    
+                                    <label class="form-label mb-0">速度:</label>
+                                    <select class="form-select form-select-sm" id="playbackSpeed" style="width: auto;">
+                                        <option value="1">1x</option>
+                                        <option value="2" selected>2x</option>
+                                        <option value="4">4x</option>
+                                    </select>
+                                    
+                                    <input type="range" class="form-range" id="playbackSlider" min="0" max="100" value="0" style="width: 200px;">
+                                    <span id="playbackTime">00:00 / 00:00</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <!-- Left Column: Performance Charts -->
+                <div class="col-lg-8">
+                    <!-- Performance Charts -->
+                    <div class="card mb-3">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                            <h6 class="mb-0"><i class="fas fa-chart-line"></i> 性能圖表</h6>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <div>
+                                    <label class="form-label me-2" style="font-size: 0.85rem;">時間範圍:</label>
+                                    <select class="form-select form-select-sm" id="chartTimeRange" style="width: auto; display: inline-block;">
+                                        <option value="30">30秒</option>
+                                        <option value="60" selected>1分鐘</option>
+                                        <option value="120">2分鐘</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label me-2" style="font-size: 0.85rem;">更新頻率:</label>
+                                    <select class="form-select form-select-sm" id="chartUpdateRate" style="width: auto; display: inline-block;">
+                                        <option value="5">5 Hz</option>
+                                        <option value="10" selected>10 Hz</option>
+                                        <option value="20">20 Hz</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="attitude-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#attitude-chart" type="button">姿態</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="rc-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#rc-chart" type="button">RC 輸入</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="motion-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#motion-chart" type="button">運動</button>
+                                </li>
+                                <li class="nav-item" role="presentation" id="altitudeTabItem" style="display: none;">
+                                    <button class="nav-link" id="altitude-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#altitude-chart" type="button">高度</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="chartTabContent">
+                                <div class="tab-pane fade show active" id="attitude-chart" role="tabpanel">
+                                    <div class="chart-container">
+                                        <canvas id="attitudeChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="rc-chart" role="tabpanel">
+                                    <div class="chart-container">
+                                        <canvas id="rcChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="motion-chart" role="tabpanel">
+                                    <div class="chart-container">
+                                        <canvas id="motionChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="altitude-chart" role="tabpanel">
+                                    <div class="chart-container">
+                                        <canvas id="altitudeChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Log Table -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-list"></i> 即時紀錄</h6>
+                            <button class="btn btn-sm btn-outline-primary" id="exportLogsBtn">
+                                <i class="fas fa-download"></i> 匯出 CSV
+                            </button>
+                        </div>
+                        <div class="card-body p-0">
+                            <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                <table class="table table-sm table-hover mb-0">
+                                    <thead class="table-light sticky-top">
+                                        <tr>
+                                            <th>時間</th>
+                                            <th>載具</th>
+                                            <th>級別</th>
+                                            <th>訊息</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="logTableBody">
+                                        <!-- 日誌將動態生成 -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/performance.js') }}"></script>
+</body>
+</html>
+

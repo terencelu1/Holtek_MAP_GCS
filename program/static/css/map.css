@@ -1,0 +1,394 @@
+/* Map Page Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    padding-top: 56px;
+    padding-left: 250px;
+}
+
+/* Top Bar */
+.navbar {
+    height: 56px;
+    z-index: 1030;
+    padding: 0;
+}
+
+.navbar .container-fluid {
+    padding: 0 15px;
+    display: flex;
+    align-items: center;
+    height: 100%;
+}
+
+.navbar-brand {
+    margin: 0;
+    padding: 0;
+    font-size: 1.25rem;
+    line-height: 56px;
+}
+
+.navbar-nav {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: 250px;
+    height: calc(100vh - 56px);
+    background-color: #343a40;
+    padding-top: 20px;
+    z-index: 1000;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #adb5bd;
+    padding: 12px 20px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: #007bff;
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: #007bff;
+}
+
+.main-content {
+    padding: 0;
+    min-height: calc(100vh - 56px);
+}
+
+.main-content .container-fluid {
+    padding: 20px;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* Waypoint List */
+.waypoint-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.waypoint-item {
+    padding: 8px;
+    margin-bottom: 5px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #007bff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.waypoint-item:hover {
+    background-color: #e9ecef;
+}
+
+.waypoint-item.active {
+    background-color: #cfe2ff;
+    border-left-color: #0d6efd;
+}
+
+.waypoint-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.waypoint-item-actions {
+    display: flex;
+    gap: 5px;
+}
+
+.waypoint-item-actions button {
+    padding: 2px 6px;
+    font-size: 0.75rem;
+}
+
+/* Mission List */
+.mission-list {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.mission-item {
+    padding: 10px;
+    margin-bottom: 8px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border-left: 3px solid #28a745;
+}
+
+.mission-item.pending {
+    border-left-color: #ffc107;
+}
+
+.mission-item.running {
+    border-left-color: #28a745;
+}
+
+.mission-item.completed {
+    border-left-color: #6c757d;
+}
+
+.mission-item.error {
+    border-left-color: #dc3545;
+}
+
+.mission-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.mission-status {
+    font-size: 0.75rem;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-weight: 600;
+}
+
+.mission-status.pending {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.mission-status.running {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.mission-status.completed {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.mission-status.error {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+/* Map Styles */
+#map {
+    width: 100%;
+    z-index: 1;
+}
+
+/* Vehicle Icon Styles */
+.vehicle-icon {
+    transition: transform 0.3s;
+}
+
+.vehicle-icon.uav {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.vehicle-icon.ugv {
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+.vehicle-icon.uav.normal {
+    filter: drop-shadow(0 0 5px rgba(0, 123, 255, 0.5));
+}
+
+.vehicle-icon.uav.approaching {
+    filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
+}
+
+.vehicle-icon.uav.aligned {
+    filter: drop-shadow(0 0 5px rgba(40, 167, 69, 0.5));
+}
+
+.vehicle-icon.uav.landing {
+    filter: drop-shadow(0 0 5px rgba(220, 53, 69, 0.5));
+}
+
+/* Distance Line */
+.distance-line {
+    stroke: #6c757d;
+    stroke-width: 2;
+    stroke-dasharray: 5, 5;
+    opacity: 0.7;
+}
+
+/* Trail Path */
+.trail-path {
+    fill: none;
+    stroke-width: 2;
+    opacity: 0.6;
+}
+
+.trail-path.uav {
+    stroke: #007bff;
+}
+
+.trail-path.ugv {
+    stroke: #28a745;
+}
+
+/* Home Marker */
+.home-marker {
+    background-color: #ffc107;
+    border: 2px solid #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+/* Speed Vector Arrow */
+.speed-vector {
+    stroke: #dc3545;
+    stroke-width: 2;
+    fill: #dc3545;
+    opacity: 0.8;
+}
+
+/* Vehicle Status Panel */
+.vehicle-status-panel {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.status-panel-content {
+    background-color: rgba(255, 255, 255, 0.95);
+    border: 2px solid #007bff;
+    border-radius: 6px;
+    padding: 6px 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    font-size: 11px;
+    min-width: 140px;
+    pointer-events: none;
+}
+
+.status-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 4px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #dee2e6;
+}
+
+.status-panel-header strong {
+    font-size: 12px;
+    color: #212529;
+}
+
+.status-badge {
+    font-size: 9px;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-badge.armed {
+    background-color: #dc3545;
+    color: white;
+}
+
+.status-badge.disarmed {
+    background-color: #6c757d;
+    color: white;
+}
+
+.status-panel-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.status-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.status-label {
+    color: #6c757d;
+    font-weight: 500;
+    font-size: 10px;
+}
+
+.status-value {
+    color: #212529;
+    font-weight: 600;
+    font-size: 10px;
+    text-align: right;
+}
+
+/* Direction Arrow */
+.direction-arrow {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.arrow-icon {
+    font-size: 16px;
+    color: #dc3545;
+    font-weight: bold;
+    text-shadow: 0 0 3px rgba(255, 255, 255, 0.8);
+    transform-origin: center center;
+    transition: transform 0.3s;
+    line-height: 1;
+}
+
+/* Mission Preview */
+.mission-preview {
+    stroke-dasharray: 10, 5;
+    animation: dash 1s linear infinite;
+}
+
+@keyframes dash {
+    to {
+        stroke-dashoffset: -15;
+    }
+}
+
+.mission-marker {
+    z-index: 2000;
+}
+
+/* Responsive */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 60px;
+    }
+    
+    .sidebar .nav-link span {
+        display: none;
+    }
+    
+    .main-content {
+        padding: 0;
+    }
+    
+    .main-content .container-fluid {
+        padding: 10px;
+    }
+}
+

@@ -1,0 +1,13 @@
+Flask==3.0.0
+Werkzeug==3.0.1
+pymavlink>=2.4.37
+pyserial>=3.5
+numpy
+pandas
+python-socketio
+python-engineio
+python-decouple
+colorama
+psutil
+requests
+pytz

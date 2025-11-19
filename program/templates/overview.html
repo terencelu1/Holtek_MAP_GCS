@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UAV × UGV Control Center - 總覽</title>
+    
+    <!-- CSS Dependencies -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/overview.css') }}" rel="stylesheet">
+    
+    <!-- Chart.js for performance charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+</head>
+<body>
+    <!-- Top Bar -->
+    <nav class="navbar navbar-dark bg-dark fixed-top">
+        <div class="container-fluid">
+            <span class="navbar-brand mb-0 h1">
+                <i class="fas fa-satellite-dish"></i> UAV × UGV Control Center
+            </span>
+            <div class="navbar-nav flex-row">
+                <div class="nav-item me-3">
+                    <span class="text-light" id="currentTime">20:12:03</span>
+                </div>
+                <div class="nav-item me-3">
+                    <span class="text-light" id="currentDate">2025/11/19</span>
+                </div>
+                <div class="nav-item">
+                    <span class="text-light" id="weatherInfo">
+                        <i class="fas fa-thermometer-half"></i> 24°C | 
+                        <i class="fas fa-wind"></i> 3.5 m/s
+                    </span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Side Navigation -->
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('index') }}">
+                    <i class="fas fa-home"></i> 總覽
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('map_page') }}">
+                    <i class="fas fa-map"></i> 地圖與任務
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('performance_page') }}">
+                    <i class="fas fa-chart-line"></i> 性能與記錄
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('system_page') }}">
+                    <i class="fas fa-cog"></i> 系統與電源
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <h2 class="page-title mb-4">總覽</h2>
+            
+            <!-- System Status Cards -->
+            <div class="row mb-4" id="systemStatusCards">
+                <!-- 載具狀態卡片將由 JavaScript 動態生成 -->
+            </div>
+
+            <!-- Main Dashboard Grid -->
+            <!-- 布局說明：系統狀態卡片為 col-lg-4 (4欄=1單位)，所以1單位=4欄，3單位=12欄 -->
+            <div class="row">
+                <!-- Left Column - 1單位 (電池狀態 + 位置資訊) -->
+                <div class="col-lg-4">
+                    <!-- Battery Status -->
+                    <div class="card mb-3" id="batteryStatusCard">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-battery-half"></i> 電池狀態</h6>
+                        </div>
+                        <div class="card-body" id="batteryStatusContent">
+                            <!-- 電池狀態將由 JavaScript 動態生成 -->
+                        </div>
+                    </div>
+
+                    <!-- Position Info -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-map-marker-alt"></i> 位置資訊</h6>
+                        </div>
+                        <div class="card-body" id="positionInfoContent">
+                            <!-- 位置資訊將由 JavaScript 動態生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attitude Indicator Column - 1單位 -->
+                <div class="col-lg-4">
+                    <!-- Attitude Indicator -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-compass"></i> 姿態指示器</h6>
+                            <select class="form-select form-select-sm mt-2" id="attitudeVehicleSelect">
+                                <option value="UAV1">UAV1</option>
+                                <option value="UGV1">UGV1</option>
+                            </select>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="attitude-container">
+                                <canvas id="attitudeCanvas" width="250" height="250"></canvas>
+                                <div class="attitude-values mt-3">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <small class="text-muted">Roll</small>
+                                            <div id="rollValue" class="attitude-number">0.0°</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted">Pitch</small>
+                                            <div id="pitchValue" class="attitude-number">0.0°</div>
+                                        </div>
+                                        <div class="col-4">
+                                            <small class="text-muted">Yaw</small>
+                                            <div id="yawValue" class="attitude-number">0.0°</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column - 1單位 (鏡頭 + 訊息中心) -->
+                <div class="col-lg-4">
+                    <!-- Camera View -->
+                    <div class="card mb-3">
+                        <div class="card-header">
+                            <h6 class="mb-0"><i class="fas fa-camera"></i> 鏡頭</h6>
+                            <select class="form-select form-select-sm mt-2" id="cameraVehicleSelect">
+                                <option value="UAV1">UAV1</option>
+                                <option value="UGV1">UGV1</option>
+                            </select>
+                        </div>
+                        <div class="card-body">
+                            <div class="camera-view">
+                                <img id="cameraImage" src="{{ url_for('static', filename='images/placeholder.jpg') }}" 
+                                     alt="Camera View" class="img-fluid">
+                                <div class="camera-overlay">
+                                    <div class="overlay-item">
+                                        <span class="overlay-label">Mode:</span>
+                                        <span id="cameraMode">--</span>
+                                    </div>
+                                    <div class="overlay-item">
+                                        <span class="overlay-label">Battery:</span>
+                                        <span id="cameraBattery">--%</span>
+                                    </div>
+                                    <div class="overlay-item">
+                                        <span class="overlay-label">Alt/Speed:</span>
+                                        <span id="cameraAltSpeed">-- m / -- m/s</span>
+                                    </div>
+                                    <div class="overlay-item">
+                                        <span class="overlay-label">Time:</span>
+                                        <span id="cameraTime">--:--:--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message Center -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h6 class="mb-0"><i class="fas fa-comments"></i> 訊息中心</h6>
+                            <button class="btn btn-sm btn-outline-secondary" id="clearMessages">
+                                <i class="fas fa-trash"></i> 清除
+                            </button>
+                        </div>
+                        <div class="card-body message-center" id="messageCenter">
+                            <!-- 訊息將由 JavaScript 動態生成 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Charts Row - 3單位 (全寬) -->
+            <div class="row mt-3">
+                <!-- Performance Charts Column - 3單位 (12欄) -->
+                <div class="col-lg-12">
+                    <!-- Mini Performance Charts -->
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center flex-wrap">
+                            <div>
+                                <h6 class="mb-0"><i class="fas fa-chart-line"></i> 性能圖表</h6>
+                                <select class="form-select form-select-sm mt-2" id="chartVehicleSelect" style="width: auto; display: inline-block;">
+                                    <option value="UAV1">UAV1</option>
+                                    <option value="UGV1">UGV1</option>
+                                </select>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <div>
+                                    <label class="form-label me-2" style="font-size: 0.85rem;">時間範圍:</label>
+                                    <select class="form-select form-select-sm" id="chartTimeRange" style="width: auto; display: inline-block;">
+                                        <option value="30">30秒</option>
+                                        <option value="60" selected>1分鐘</option>
+                                        <option value="120">2分鐘</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="form-label me-2" style="font-size: 0.85rem;">更新頻率:</label>
+                                    <select class="form-select form-select-sm" id="chartUpdateRate" style="width: auto; display: inline-block;">
+                                        <option value="5">5 Hz</option>
+                                        <option value="10" selected>10 Hz</option>
+                                        <option value="20">20 Hz</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs" id="chartTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="attitude-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#attitude-chart" type="button">姿態</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="rc-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#rc-chart" type="button">RC</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="speed-tab" data-bs-toggle="tab" 
+                                            data-bs-target="#speed-chart" type="button">速度</button>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="chartTabContent">
+                                <div class="tab-pane fade show active" id="attitude-chart" role="tabpanel">
+                                    <div class="chart-container-wide">
+                                        <canvas id="attitudeChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="rc-chart" role="tabpanel">
+                                    <div class="chart-container-wide">
+                                        <canvas id="rcChart"></canvas>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="speed-chart" role="tabpanel">
+                                    <div class="chart-container-wide">
+                                        <canvas id="speedChart"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Dependencies -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/attitude_indicator.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/overview.js') }}"></script>
+</body>
+</html>
+

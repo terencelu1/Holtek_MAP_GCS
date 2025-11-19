@@ -1,0 +1,388 @@
+/* UAV × UGV Control Center - Overview Page Styles */
+
+:root {
+    --primary-color: #007bff;
+    --success-color: #28a745;
+    --warning-color: #ffc107;
+    --danger-color: #dc3545;
+    --info-color: #17a2b8;
+    --dark-bg: #343a40;
+    --sidebar-width: 250px;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    padding-top: 56px;
+    padding-left: var(--sidebar-width);
+}
+
+/* Top Bar */
+.navbar {
+    height: 56px;
+    z-index: 1030;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed;
+    top: 56px;
+    left: 0;
+    width: var(--sidebar-width);
+    height: calc(100vh - 56px);
+    background-color: var(--dark-bg);
+    padding: 20px 0;
+    z-index: 1020;
+    overflow-y: auto;
+}
+
+.sidebar .nav-link {
+    color: #adb5bd;
+    padding: 12px 20px;
+    border-left: 3px solid transparent;
+    transition: all 0.3s;
+}
+
+.sidebar .nav-link:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-left-color: var(--primary-color);
+}
+
+.sidebar .nav-link.active {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.15);
+    border-left-color: var(--primary-color);
+}
+
+/* Main Content */
+.main-content {
+    padding: 20px;
+    min-height: calc(100vh - 56px);
+}
+
+.page-title {
+    color: #333;
+    font-weight: 600;
+}
+
+/* System Status Cards */
+.system-status-card {
+    margin-bottom: 20px;
+    border: 2px solid #dee2e6;
+    transition: all 0.3s;
+}
+
+.system-status-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.system-status-card.connected {
+    border-color: var(--success-color);
+}
+
+.system-status-card.disconnected {
+    border-color: var(--danger-color);
+    opacity: 0.7;
+}
+
+.vehicle-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.vehicle-name {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.vehicle-type-badge {
+    font-size: 0.8rem;
+    padding: 4px 8px;
+}
+
+.status-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.status-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.status-item label {
+    font-size: 0.85rem;
+    color: #6c757d;
+    margin-bottom: 4px;
+}
+
+.status-item .value {
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.data-update-info {
+    font-size: 0.75rem;
+    color: #6c757d;
+    margin-top: 10px;
+}
+
+.data-stale {
+    color: var(--danger-color);
+    font-weight: 600;
+}
+
+/* Battery Status */
+.battery-item {
+    margin-bottom: 15px;
+}
+
+.battery-item label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.battery-value {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.battery-progress {
+    height: 25px;
+    margin-top: 5px;
+}
+
+/* Attitude Indicator */
+.attitude-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#attitudeCanvas {
+    border-radius: 50%;
+    background-color: #f8f9fa;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.attitude-values {
+    width: 100%;
+}
+
+.attitude-number {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Performance Charts */
+.chart-container-mini {
+    position: relative;
+    height: 250px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.chart-container-wide {
+    position: relative;
+    height: 300px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+/* Camera View */
+.camera-view {
+    position: relative;
+    width: 100%;
+    background-color: #000;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.camera-view img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.camera-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+    padding: 10px;
+    color: #fff;
+    font-size: 0.85rem;
+}
+
+.overlay-item {
+    margin-bottom: 5px;
+}
+
+.overlay-label {
+    font-weight: 600;
+    margin-right: 8px;
+}
+
+/* Message Center */
+.message-center {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 0;
+}
+
+.message-item {
+    padding: 10px 15px;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.9rem;
+}
+
+.message-item:last-child {
+    border-bottom: none;
+}
+
+.message-item.info {
+    background-color: #e7f3ff;
+    border-left: 3px solid var(--info-color);
+}
+
+.message-item.warning {
+    background-color: #fff3cd;
+    border-left: 3px solid var(--warning-color);
+}
+
+.message-item.error {
+    background-color: #f8d7da;
+    border-left: 3px solid var(--danger-color);
+}
+
+.message-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.message-time {
+    font-size: 0.75rem;
+    color: #6c757d;
+}
+
+.message-vehicle {
+    font-weight: 600;
+    color: #333;
+}
+
+.message-text {
+    color: #555;
+}
+
+/* Position Info */
+.position-item {
+    margin-bottom: 10px;
+}
+
+.position-item label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.position-value {
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: 'Courier New', monospace;
+}
+
+/* Control Buttons */
+.control-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.control-buttons .btn {
+    flex: 1;
+    min-width: 100px;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .sidebar {
+        width: 200px;
+    }
+    
+    body {
+        padding-left: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        width: 0;
+        overflow: hidden;
+    }
+    
+    body {
+        padding-left: 0;
+    }
+    
+    .main-content {
+        padding: 10px;
+    }
+    
+    .status-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Loading States */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #6c757d;
+    font-style: italic;
+}
+
+.no-data::before {
+    content: "⚠ ";
+    color: var(--warning-color);
+    font-weight: 600;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
